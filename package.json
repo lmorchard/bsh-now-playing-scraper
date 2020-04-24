@@ -1,0 +1,28 @@
+{
+  "name": "bsh-autopost-now-playing-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "ndjson": "^1.5.0",
+    "node-fetch": "^2.6.0",
+    "nodemon": "^2.0.3",
+    "p-queue": "^6.3.0",
+    "pino": "^6.2.0",
+    "pino-colada": "^1.6.1",
+    "pino-http": "^5.0.0",
+    "pino-pretty": "^4.0.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5"
+  }
+}
