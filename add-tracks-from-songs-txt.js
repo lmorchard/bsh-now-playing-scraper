@@ -4,6 +4,7 @@ const { default: PQueue } = require('p-queue');
 
 const {
   SONGS_TXT_FN = 'songs.txt',
+  MYSTERY_SONGS_TXT_FN = 'mystery-songs.txt',
   SPOTIFY_PLAYLIST_ID,
 } = require('./lib/config')();
 
@@ -40,17 +41,27 @@ async function loadSeenTrackIdsFromPlaylist() {
 async function searchSong(song) {
   const params = new URLSearchParams({
     type: 'track',
-    q: `artist:${song.artist} ${song.title}`,
+    q: `artist:"${song.artist}" track:"${song.title}"`,
   });
   log.debug({ /* song, */ params: params.toString() });
   const result = await fetchSpotify(`search?${params.toString()}`);
   if (result.tracks && result.tracks.items.length) {
+    log.info({ msg: `Found ${result.tracks.items.length} tracks in search`, song });
     const tracksToAdd = result.tracks.items
       .slice(0, 1)
       .filter((track) => !seenTrackIds.includes(track.id));
-    seenTrackIds.push(...tracksToAdd.map(track => track.id));
+    seenTrackIds.push(...tracksToAdd.map((track) => track.id));
     log.info({ msg: `Found ${tracksToAdd.length} new tracks`, song });
     await addTracksToPlaylist(tracksToAdd);
+    fs.appendFileSync(
+      SONGS_TXT_FN,
+      `${JSON.stringify({ song, params: params.toString() })}\n`
+    );
+  } else {
+    fs.appendFileSync(
+      MYSTERY_SONGS_TXT_FN,
+      `${JSON.stringify({ song, params: params.toString() })}\n`
+    );
   }
 }
 

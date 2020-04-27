@@ -1,8 +1,11 @@
+const fs = require('fs');
 const fetch = require('node-fetch');
 const cheerio = require('cheerio');
 
 const {
   SPOTIFY_PLAYLIST_ID,
+  SONGS_TXT_FN = 'songs.txt',
+  MYSTERY_SONGS_TXT_FN = 'mystery-songs.txt',
   BSH_WIDGET_URL = 'https://widgets.autopo.st/widgets/public/DR66/recentlyplayed.php',
   INTERVAL = 60 * 1000,
 } = require('./lib/config')();
@@ -11,7 +14,7 @@ const log = require('./lib/log')().child({
   module: 'scrape-now-playing-into-playlist',
 });
 
-const { fetchSpotify, fetchSpotifyAllPages } = require('./lib/spotify');
+const { clearAccessToken, fetchSpotify, fetchSpotifyAllPages } = require('./lib/spotify');
 
 let seenTrackIds = [];
 
@@ -29,6 +32,7 @@ async function loadSeenTrackIdsFromPlaylist() {
 
 async function update() {
   try {
+    clearAccessToken();
     await loadSeenTrackIdsFromPlaylist();
     const currSongs = await scrapeCurrentSongs();
     console.log(Date.now(), currSongs);
@@ -67,7 +71,7 @@ async function scrapeCurrentSongs() {
 async function addSong(song) {
   const params = new URLSearchParams({
     type: 'track',
-    q: `artist:${song.artist} ${song.title}`,
+    q: `artist:"${song.artist}" track:"${song.title}"`,
   });
   log.info({
     msg: 'searching for song',
@@ -77,6 +81,7 @@ async function addSong(song) {
   const result = await fetchSpotify(`search?${params.toString()}`);
 
   if (result && result.tracks && result.tracks.items.length) {
+    log.info({ msg: `Found ${result.tracks.items.length} tracks in search`, song });
     const tracksToAdd = result.tracks.items
       .slice(0, 1)
       .filter((track) => !seenTrackIds.includes(track.id));
@@ -93,6 +98,15 @@ async function addSong(song) {
       }
     );
     log.info({ msg: 'added tracks', trackAddResult });
+    fs.appendFileSync(
+      SONGS_TXT_FN,
+      `${JSON.stringify(song)}\n`
+    );
+  } else {
+    fs.appendFileSync(
+      MYSTERY_SONGS_TXT_FN,
+      `${JSON.stringify({ song, params: params.toString() })}\n`
+    );
   }
 }
 
