@@ -35,12 +35,12 @@ async function update() {
     clearAccessToken();
     await loadSeenTrackIdsFromPlaylist();
     const currSongs = await scrapeCurrentSongs();
-    console.log(Date.now(), currSongs);
+    log.debug({ msg: 'current songs', currSongs });
     for (const song of currSongs) {
       await addSong(song);
     }
   } catch (err) {
-    console.error('update', err);
+    log.error({ msg: 'update error', error: err });
   }
 }
 
@@ -57,15 +57,30 @@ async function scrapeCurrentSongs() {
       .split('<br>')
       .slice(0, 2)
       .map((field) => field.split('>')[1]);
-    const [artist, title] = song
+    const [artist, title] = cleanUpSong(song
       .split(' - ')
-      .map((s) => $(`<span>${s}</span>`).text());
+      .map((s) => $(`<span>${s}</span>`).text()));
     const [_, playedAt] = playedAtTxt.split('at ').map((s) => s.trim());
     const scrapedAt = Date.now();
     currSongs.push({ artist, title, playedAt, scrapedAt });
   });
 
   return currSongs;
+}
+
+function cleanUpSong(song) {
+  let [ artist, title ] = song;
+  if (artist === 'Bj╤årk' || artist === 'Bjцrk') {
+    artist = 'Björk';
+  }
+  if (artist === 'Sinйad O\'Connor') {
+    artist = 'Sinéad O\'Connor';
+  }
+  if (artist === 'INKRДKTARE') {
+    artist = 'INKRÄKTARE';
+  }
+  title = title.replace(/''/g, "'");
+  return [ artist, title ];
 }
 
 async function addSong(song) {
