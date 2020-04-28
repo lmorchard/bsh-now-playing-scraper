@@ -79,14 +79,22 @@ function cleanUpSong(song) {
   if (artist === 'INKRДKTARE') {
     artist = 'INKRÄKTARE';
   }
+  if (artist === 'Jуnsi') {
+    artist = 'Jonsi';
+  }
+  if (artist === 'Sigur Roґs') {
+    artist = 'Sigur Ros';
+  }
   title = title.replace(/''/g, "'");
+  title = title.replace(/ \(.*\)/, '');
+  title = title.replace('Draems', 'Dreams');
   return [ artist, title ];
 }
 
 async function addSong(song) {
   const params = new URLSearchParams({
     type: 'track',
-    q: `artist:"${song.artist}" track:"${song.title}"`,
+    q: `artist:"${song.artist}" ${song.title}`,
   });
   log.info({
     msg: 'searching for song',
@@ -120,7 +128,7 @@ async function addSong(song) {
   } else {
     fs.appendFileSync(
       MYSTERY_SONGS_TXT_FN,
-      `${JSON.stringify({ song, params: params.toString() })}\n`
+      `${JSON.stringify({ artist: song.artist, title: song.title, params: params.toString() })}\n`
     );
   }
 }
