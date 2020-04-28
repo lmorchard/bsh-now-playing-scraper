@@ -11,7 +11,7 @@ const {
 } = require('./lib/config')();
 
 const log = require('./lib/log')().child({
-  module: 'scrape-now-playing-into-playlist',
+  name: 'scrape-now-playing-into-playlist',
 });
 
 const { clearAccessToken, fetchSpotify, fetchSpotifyAllPages } = require('./lib/spotify');
@@ -74,7 +74,7 @@ function cleanUpSong(song) {
     artist = 'Björk';
   }
   if (artist === 'Sinйad O\'Connor') {
-    artist = 'Sinéad O\'Connor';
+    artist = 'Sinead O\'Connor';
   }
   if (artist === 'INKRДKTARE') {
     artist = 'INKRÄKTARE';
@@ -82,8 +82,17 @@ function cleanUpSong(song) {
   if (artist === 'Jуnsi') {
     artist = 'Jonsi';
   }
-  if (artist === 'Sigur Roґs') {
+  if (artist === 'Sigur Roґs' || artist === 'Sigur Rуs') {
     artist = 'Sigur Ros';
+  }
+  if (artist === 'Massive Attack & Azekel') {
+    artist = 'Massive Attack';
+  }
+  if (artist === 'The Sisters Of Mercy') {
+    artist = 'Sisters Of Mercy';
+  }
+  if (artist === 'Rцyksopp') {
+    artist = 'Royksopp';
   }
   title = title.replace(/''/g, "'");
   title = title.replace(/ \(.*\)/, '');
