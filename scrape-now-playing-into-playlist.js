@@ -35,7 +35,10 @@ async function update() {
     clearAccessToken();
     await loadSeenTrackIdsFromPlaylist();
     const currSongs = await scrapeCurrentSongs();
-    log.debug({ msg: 'current songs', currSongs });
+    log.info({
+      msg: 'current songs',
+      songs: currSongs.map(({artist, title}) => ({artist, title})),
+    });
     for (const song of currSongs) {
       await addSong(song);
     }
