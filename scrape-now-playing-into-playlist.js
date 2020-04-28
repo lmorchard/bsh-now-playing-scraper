@@ -101,26 +101,27 @@ function cleanUpSong(song) {
 }
 
 async function addSong(song) {
+  let searchResultCount = 0;
+  let newTracksCount = 0;
+  let isMysterious = false;
+
+  const { artist, title } = song;
   const params = new URLSearchParams({
     type: 'track',
-    q: `artist:"${song.artist}" ${song.title}`,
+    q: `artist:"${artist}" ${title}`,
   });
-  log.info({
-    msg: 'searching for song',
-    song,
-    params: params.toString(),
-  });
+
   const result = await fetchSpotify(`search?${params.toString()}`);
+  searchResultCount = result.tracks.items.length;
 
   if (result && result.tracks && result.tracks.items.length) {
-    log.info({ msg: `Found ${result.tracks.items.length} tracks in search`, song });
     const tracksToAdd = result.tracks.items
       .slice(0, 1)
       .filter((track) => !seenTrackIds.includes(track.id));
     seenTrackIds.push(...tracksToAdd.map((track) => track.id));
+    newTracksCount = tracksToAdd.length;
 
-    log.info({ msg: `Found ${tracksToAdd.length} new tracks`, song });
-    const trackAddResult = await fetchSpotify(
+    await fetchSpotify(
       `playlists/${SPOTIFY_PLAYLIST_ID}/tracks`,
       {
         method: 'POST',
@@ -129,17 +130,22 @@ async function addSong(song) {
         }),
       }
     );
-    log.info({ msg: 'added tracks', trackAddResult });
-    fs.appendFileSync(
-      SONGS_TXT_FN,
-      `${JSON.stringify(song)}\n`
-    );
   } else {
+    isMysterious = true;
     fs.appendFileSync(
       MYSTERY_SONGS_TXT_FN,
       `${JSON.stringify({ artist: song.artist, title: song.title, params: params.toString() })}\n`
     );
   }
+  log.info({
+    msg: 'processed song',
+    artist,
+    title,
+    searchParams: params.toString(),
+    searchResultCount,
+    newTracksCount,
+    isMysterious,
+  });
 }
 
 main().catch((err) => log.error(err));
