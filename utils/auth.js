@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 
 const {
   PORT = 8675,
-  HOST = '192.168.0.13',
+  HOST = '192.168.0.234',
   SPOTIFY_CLIENT_ID = null,
   SPOTIFY_CLIENT_SECRET = null,
 } = require('../lib/config')();
