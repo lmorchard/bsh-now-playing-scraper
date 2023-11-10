@@ -6,13 +6,13 @@ const {
   SONGS_TXT_FN = 'songs.txt',
   MYSTERY_SONGS_TXT_FN = 'mystery-songs.txt',
   SPOTIFY_PLAYLIST_ID,
-} = require('./lib/config')();
+} = require('../lib/config')();
 
-const log = require('./lib/log')().child({
+const log = require('../lib/log')().child({
   module: 'add-tracks-from-songs-txt',
 });
 
-const { fetchSpotify, fetchSpotifyAllPages } = require('./lib/spotify');
+const { fetchSpotify, fetchSpotifyAllPages } = require('../lib/spotify');
 
 const queue = new PQueue({
   concurrency: 1,

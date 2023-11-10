@@ -1,8 +1,8 @@
 const fetch = require('node-fetch');
 
-const config = require('./lib/config')();
-const log = require('./lib/log')().child({ module: 'whoami' });
-const { refreshAccessToken, accessTokenAuthHeader } = require('./lib/spotify');
+const config = require('../lib/config')();
+const log = require('../lib/log')().child({ module: 'whoami' });
+const { refreshAccessToken, accessTokenAuthHeader } = require('../lib/spotify');
 
 async function main() {
   const { access_token: accessToken } = await refreshAccessToken();

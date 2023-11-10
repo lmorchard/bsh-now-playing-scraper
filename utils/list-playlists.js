@@ -1,5 +1,5 @@
-const log = require('./lib/log')().child({ module: 'whoami' });
-const { fetchSpotify } = require('./lib/spotify');
+const log = require('../lib/log')().child({ module: 'whoami' });
+const { fetchSpotify } = require('../lib/spotify');
 
 async function main() {
   const data = await fetchSpotify('me/playlists');

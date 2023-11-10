@@ -3,12 +3,12 @@ const fetch = require('node-fetch');
 
 const {
   PORT = 8675,
-  HOST = '127.0.0.1',
+  HOST = '192.168.0.13',
   SPOTIFY_CLIENT_ID = null,
   SPOTIFY_CLIENT_SECRET = null,
-} = require('./lib/config')();
+} = require('../lib/config')();
 
-const log = require('./lib/log')().child({ module: 'auth' });
+const log = require('../lib/log')().child({ module: 'auth' });
 
 if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
   console.error('Spotift client ID and secret not configured');

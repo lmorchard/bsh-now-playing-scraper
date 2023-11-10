@@ -8,17 +8,21 @@ const {
   MYSTERY_SONGS_TXT_FN = 'mystery-songs.txt',
   BSH_WIDGET_URL = 'https://widgets.autopo.st/widgets/public/DR66/recentlyplayed.php',
   INTERVAL = 60 * 1000,
-} = require('./lib/config')();
+} = require('../lib/config')();
 
-const log = require('./lib/log')().child({
+const log = require('../lib/log')().child({
   name: 'scrape-now-playing-into-playlist',
 });
 
-const { clearAccessToken, fetchSpotify, fetchSpotifyAllPages } = require('./lib/spotify');
+const { clearAccessToken, fetchSpotify, fetchSpotifyAllPages } = require('.../lib/spotify');
 
 let seenTrackIds = [];
 
 async function main() {
+  clearAccessToken();
+  log.info({ msg: "Loading seen tracks from playlist" });
+  await loadSeenTrackIdsFromPlaylist();
+
   update();
   setInterval(update, INTERVAL);
 }
@@ -32,8 +36,8 @@ async function loadSeenTrackIdsFromPlaylist() {
 
 async function update() {
   try {
+    log.info({ msg: "updating songs" });
     clearAccessToken();
-    await loadSeenTrackIdsFromPlaylist();
     const currSongs = await scrapeCurrentSongs();
     log.info({
       msg: 'current songs',
@@ -43,7 +47,7 @@ async function update() {
       await addSong(song);
     }
   } catch (err) {
-    log.error({ msg: 'update error', error: err });
+    log.error({ msg: 'update error', error: '' + err });
   }
 }
 
@@ -124,15 +128,18 @@ async function addSong(song) {
     seenTrackIds.push(...tracksToAdd.map((track) => track.id));
     newTracksCount = tracksToAdd.length;
 
-    await fetchSpotify(
-      `playlists/${SPOTIFY_PLAYLIST_ID}/tracks`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          uris: tracksToAdd.map((track) => track.uri),
-        }),
-      }
-    );
+    const uris = tracksToAdd.map((track) => track.uri);
+    if (uris.length) {
+      await fetchSpotify(
+        `playlists/${SPOTIFY_PLAYLIST_ID}/tracks`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            uris:uris,
+          }),
+        }
+      );
+    }
   } else {
     isMysterious = true;
     fs.appendFileSync(
