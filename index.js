@@ -4,8 +4,8 @@ const cheerio = require('cheerio');
 
 const {
   SPOTIFY_PLAYLIST_ID,
-  SONGS_TXT_FN = 'songs.txt',
-  MYSTERY_SONGS_TXT_FN = 'mystery-songs.txt',
+  SONGS_TXT_FN = 'data/songs.txt',
+  MYSTERY_SONGS_TXT_FN = 'data/mystery-songs.txt',
   STREEMLION_JSON_URL = 'https://radio.streemlion.com:2405/status-json.xsl',
   INTERVAL = 60 * 1000,
 } = require('./lib/config')();

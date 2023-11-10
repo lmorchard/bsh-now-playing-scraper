@@ -37,7 +37,11 @@ These are instructions that hopefully future-me will understand, but they might 
     - `SPOTIFY_ACCESS_TOKEN=BQD(REDACTED)`
     - `SPOTIFY_REFRESH_TOKEN=AQCIO(REDACTED)`
 
-- Finally, run `./start.sh`
-  - Or, better yet, `docker run --restart -d lmorchard/bsh-spy`
+- Finally, run `npm install && ./start.sh`
+  - Or, better yet:
+    ```
+    mkdir data
+    docker run --restart unless-stopped -v `pwd`/data:/app/data -d lmorchard/bsh-spy
+    ```
 
 - Later, check out the `utils` directory for misc scripts and crap
